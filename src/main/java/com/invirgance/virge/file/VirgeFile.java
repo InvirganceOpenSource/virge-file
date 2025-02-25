@@ -23,29 +23,63 @@ package com.invirgance.virge.file;
 
 import com.invirgance.virge.tool.Tool;
 import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This serves as the Virge File module, for copying, converting or acting on files in some way.
  * @author tadghh
  */
 public class VirgeFile {
-    private static Tool tool = new Convert();
-
-    public static void main(String[] args) throws Exception 
+    
+    public static final Tool[] tools = new Tool[] {
+        new Convert(),
+    }; 
+    
+    public static final Map<String,Tool> lookup = new HashMap<>();
+    
+    static {
+        for(Tool tool : tools) lookup.put(tool.getName(), tool);
+    }
+ 
+    public static void main(String[] args) throws Exception
     {
-        if(args.length < 1) printShortHelp();
+        Tool tool;
         
+        if(args.length <= 1) printShortHelp();
+
         if(args[0].equals("--help") || args[0].equals("-h") || args[0].equals("-?"))
         {
-            printShortHelp();
+            printHelp(null);
         }
-  
+        
+        tool = lookup.get(args[0]);
+        
         if(tool == null) exit(6, "Unknown tool: " + args[0]);
         
-        // Test this
-        if(!tool.parse(args, 1)) print(tool.getHelp(), System.out);
+        if(!tool.parse(args, 1)) printHelp(tool);
         
         tool.execute();
+    }            
+    
+    public static void printHelp(Tool selected)
+    {
+        System.out.println();
+        System.out.println("Usage: java -jar virge.jar file <command>");
+        System.out.println();
+        System.out.println("Commands:");
+        System.out.println();
+        
+        if(selected != null)
+        {
+            print(selected.getHelp(), System.out);
+        }
+        else
+        {
+            for(Tool tool : tools) print(tool.getHelp(), System.out);
+        }
+        
+        System.exit(1);
     }
     
     private static void print(String[] lines, PrintStream out)
@@ -67,18 +101,17 @@ public class VirgeFile {
     }
     
     public static void printShortHelp()
-    {
-        
+    {      
         System.out.println();
-        System.out.println("Usage: java -jar virge-file.jar file [options] <source> <target>");
+        System.out.println("Usage: java -jar virge.jar file <command>");
         System.out.println();
         System.out.println("Commands:");
         System.out.println();
         
-        System.out.println("    " + tool.getHelp()[0]);
+        for(Tool tool : tools) System.out.println("    " + tool.getHelp()[0]);
         
         System.out.println();
         System.exit(1);
     }
-    
+       
 }

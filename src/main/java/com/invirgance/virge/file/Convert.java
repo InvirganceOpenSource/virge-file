@@ -258,15 +258,15 @@ public class Convert implements Tool
     @Override
     public String getName()
     {
-        return "copy";
+        return "convert";
     }
 
     @Override
     public String[] getHelp()
     {
         return new String[] {
-            "copy [options] <source> <target>",
-            "    Copy a file while performing a transformation between formats as required",
+            "convert [options] <source> <target>",
+            "    Convert a file while performing a transformation between formats as required",
             "",
             "    --input <format>",
             "    -i <format>",
@@ -413,7 +413,7 @@ public class Convert implements Tool
             }
         }
         
-        if(source == null) return error("No source specified! yo");
+        if(source == null) return error("No source specified!");
         if(input == null) return error("No input type specified and unable to autodetect");
         if(target == null) return error("No target specified!");
         if(output == null) return error("No output type specified and unable to autodetect");
@@ -426,7 +426,7 @@ public class Convert implements Tool
     {
         Iterable<JSONObject> iterable;
         
-        if(source == null) Virge.exit(254, "No source specified!  yo");
+        if(source == null) Virge.exit(254, "No source specified!");
         if(input == null) Virge.exit(254, "No input type specified and unable to autodetect");
         if(target == null) Virge.exit(254, "No target specified!");
         if(output == null) Virge.exit(254, "No output type specified and unable to autodetect");
