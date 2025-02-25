@@ -128,6 +128,11 @@ public class Convert implements Tool
     {
         File file;
         
+        if(path.equals("-"))
+        {
+            return new InputStreamSource(System.in);
+        }
+        
         if(isURL(path))
         {
             return new InputStreamSource(URI.create(path).toURL().openStream());
@@ -191,7 +196,12 @@ public class Convert implements Tool
     private Target getTarget(String path) throws MalformedURLException, IOException
     {
         File file;
-        
+
+        if(path.equals("-"))
+        {
+            return new OutputStreamTarget(System.out);
+        }
+
         if(isURL(path))
         {
             return new OutputStreamTarget(URI.create(path).toURL().openConnection().getOutputStream());
@@ -292,13 +302,13 @@ public class Convert implements Tool
             "    -I",
             "         Attempts to automatically coerce strings in the input records into numbers and booleans. Useful for delimited file inputs or where type information was lost.",
             "",
-            "    --source <file path>",
-            "    -s <file path>",
-            "         Alternate method of specifying the source file",
+            "    --source <file path> or piped data",
+            "    -s <file path> or piped data",
+            "         Alternate method of specifying the source file. When piping data the input type must be specified.",
             "",
             "    --target",
-            "    -t <file path>",
-            "         Alternate method of specifying the target file",
+            "    -t <file path> or piped out",
+            "         Alternate method of specifying the target file. When piping data out the target type must be specified.",
         };
     }
 
@@ -357,7 +367,7 @@ public class Convert implements Tool
                 case "-s":
                     source = getSource(args[++i]);
                     
-                    if(input == null) input = detectInput(args[i]);
+                    if(input == null && args[i] != "-") input = detectInput(args[i]);
                     
                     break;
                     
@@ -372,7 +382,7 @@ public class Convert implements Tool
                 case "-t":
                     target = getTarget(args[++i]);
                     
-                    if(output == null) output = detectOutput(args[i]);
+                    if(output == null && args[i] != "-") output = detectOutput(args[i]);
                     
                     break;
                     
