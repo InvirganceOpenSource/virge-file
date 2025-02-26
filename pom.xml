@@ -5,7 +5,7 @@
     <artifactId>virge-file</artifactId>
     <version>1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
-        <name>VirgeFile</name>
+    <name>VirgeFile</name>
     <build>
         <plugins>
             <plugin>
@@ -38,7 +38,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
-                <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>com.invirgance.virge.file.VirgeFile</exec.mainClass>
     </properties>
@@ -54,5 +54,4 @@
             <version>1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
 </project>

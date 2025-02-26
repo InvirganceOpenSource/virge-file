@@ -21,8 +21,9 @@ SOFTWARE.
  */
 package com.invirgance.virge.file;
 
+import static com.invirgance.virge.Virge.exit;
+import static com.invirgance.virge.Virge.printHelp;
 import com.invirgance.virge.tool.Tool;
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,13 +31,13 @@ import java.util.Map;
  * This serves as the Virge File module, for copying, converting or acting on files in some way.
  * @author tadghh
  */
-public class VirgeFile {
+public class VirgeFile 
+{
+    public static final Map<String,Tool> lookup = new HashMap<>();
     
     public static final Tool[] tools = new Tool[] {
         new Convert(),
     }; 
-    
-    public static final Map<String,Tool> lookup = new HashMap<>();
     
     static {
         for(Tool tool : tools) lookup.put(tool.getName(), tool);
@@ -60,44 +61,6 @@ public class VirgeFile {
         if(!tool.parse(args, 1)) printHelp(tool);
         
         tool.execute();
-    }            
-    
-    public static void printHelp(Tool selected)
-    {
-        System.out.println();
-        System.out.println("Usage: java -jar virge.jar file <command>");
-        System.out.println();
-        System.out.println("Commands:");
-        System.out.println();
-        
-        if(selected != null)
-        {
-            print(selected.getHelp(), System.out);
-        }
-        else
-        {
-            for(Tool tool : tools) print(tool.getHelp(), System.out);
-        }
-        
-        System.exit(1);
-    }
-    
-    private static void print(String[] lines, PrintStream out)
-    {
-        for(String line : lines)
-        {
-            out.println(line);
-        }
-        
-        out.println();
-        out.println();
-    }
-    
-    public static void exit(int code, String message)
-    {
-        System.err.println(message);
-        
-        System.exit(code);
     }
     
     public static void printShortHelp()
