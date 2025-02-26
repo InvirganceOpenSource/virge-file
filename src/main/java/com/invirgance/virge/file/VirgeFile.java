@@ -23,6 +23,7 @@ package com.invirgance.virge.file;
 
 import static com.invirgance.virge.Virge.exit;
 import static com.invirgance.virge.Virge.printHelp;
+import static com.invirgance.virge.Virge.printShortHelp;
 import com.invirgance.virge.tool.Tool;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,19 +64,4 @@ public class VirgeFile
         
         tool.execute();
     }
-    
-    public static void printShortHelp()
-    {      
-        System.out.println();
-        System.out.println("Usage: java -jar virge.jar file <command>");
-        System.out.println();
-        System.out.println("Commands:");
-        System.out.println();
-        
-        for(Tool tool : tools) System.out.println("    " + tool.getHelp()[0]);
-        
-        System.out.println();
-        System.exit(1);
-    }
-       
 }
