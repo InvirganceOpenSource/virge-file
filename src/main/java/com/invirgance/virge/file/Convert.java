@@ -276,7 +276,7 @@ public class Convert implements Tool
     {
         return new String[] {
             "convert [options] <source> <target>",
-            "    Convert a file while performing a transformation between formats as required",
+            "    Transforms a file from its original format to the provided one",
             "",
             "    --input <format>",
             "    -i <format>",

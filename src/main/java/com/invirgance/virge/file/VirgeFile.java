@@ -29,6 +29,7 @@ import java.util.Map;
 
 /**
  * This serves as the Virge File module, for copying, converting or acting on files in some way.
+ *
  * @author tadghh
  */
 public class VirgeFile 
@@ -46,7 +47,7 @@ public class VirgeFile
     public static void main(String[] args) throws Exception
     {
         Tool tool;
-        
+
         if(args.length <= 1) printShortHelp();
 
         if(args[0].equals("--help") || args[0].equals("-h") || args[0].equals("-?"))
