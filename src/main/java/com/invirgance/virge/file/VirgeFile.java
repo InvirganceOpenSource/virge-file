@@ -45,6 +45,11 @@ public class VirgeFile
         for(Tool tool : tools) lookup.put(tool.getName(), tool);
     }
  
+    /**
+     * The entry point for this module, the TLC (top level command) should be stripped before this is called
+     * @param args The commands for the virge-file module
+     * @throws Exception Possible IO exceptions for target or source (bad path)
+     */
     public static void main(String[] args) throws Exception
     {
         Tool tool;

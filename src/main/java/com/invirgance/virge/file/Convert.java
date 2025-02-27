@@ -49,7 +49,7 @@ import java.net.URI;
 
 
 /**
- *
+ * For converting from one file into another, ex JSON -> CSV
  * @author jbanes
  */
 public class Convert implements Tool
@@ -270,7 +270,7 @@ public class Convert implements Tool
     {
         return "convert";
     }
-
+       
     @Override
     public String[] getHelp()
     {
