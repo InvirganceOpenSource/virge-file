@@ -112,6 +112,7 @@ public class VirgeFile
                 {
                     System.out.println(HELP_SPACING + help.getName() + " - " + help.getShortDescription());
                 }  
+                
                 System.out.println();
             }
         }
