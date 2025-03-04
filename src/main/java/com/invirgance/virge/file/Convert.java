@@ -46,6 +46,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import static com.invirgance.virge.file.VirgeFile.HELP_SPACING;
+import static com.invirgance.virge.file.VirgeFile.HELP_DESCRIPTION_SPACING;
+import static com.invirgance.virge.file.VirgeFile.printToolHelp;
 
 
 /**
@@ -193,6 +196,12 @@ public class Convert implements Tool
         }
     }
     
+    @Override
+    public String getShortDescription()
+    {
+        return "Transforms a file from its original format to the provided one.";
+    }
+    
     private Target getTarget(String path) throws MalformedURLException, IOException
     {
         File file;
@@ -274,41 +283,39 @@ public class Convert implements Tool
     @Override
     public String[] getHelp()
     {
-        return new String[] {
-            "convert [options] <source> <target>",
-            "    Transforms a file from its original format to the provided one",
+        return new String[]
+        {
+            HELP_SPACING + "--input <format>",
+            HELP_SPACING + "-i <format>",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Specify the format of the input file. Currently supported options are json, csv, tsv, pipe, delimited, and jbin",
             "",
-            "    --input <format>",
-            "    -i <format>",
-            "        Specify the format of the input file. Currently supported options are json, csv, tsv, pipe, delimited, and jbin",
+            HELP_SPACING + "--output <format>",
+            HELP_SPACING + "-o <format>",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Specify the format of the output file. Currently supported options are json, csv, tsv, pipe, delimited, and jbin",
             "",
-            "    --output <format>",
-            "    -o <format>",
-            "         Specify the format of the output file. Currently supported options are json, csv, tsv, pipe, delimited, and jbin",
+            HELP_SPACING + "--jbin-compress",
+            HELP_SPACING + "-z",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Enable compression when writing a jbin file",
             "",
-            "    --jbin-compress",
-            "    -z",
-            "         Enable compression when writing a jbin file",
+            HELP_SPACING + "--input-delimiter <delimiter>",
+            HELP_SPACING + "-D <delimiter>",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Set the column delimiter if the source is a delimited file (e.g. , or |)",
             "",
-            "    --input-delimiter <delimiter>",
-            "    -D <delimiter>",
-            "         Set the column delimiter if the source is a delimited file (e.g. , or |)",
+            HELP_SPACING + "--output-delimiter <delimiter>",
+            HELP_SPACING + "-d <delimiter>",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Set the column delimiter if the target is a delimited file (e.g. , or |)",
             "",
-            "    --output-delimiter <delimiter>",
-            "    -d <delimiter>",
-            "         Set the column delimiter if the target is a delimited file (e.g. , or |)",
+            HELP_SPACING + "--detect-types",
+            HELP_SPACING + "-I",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Attempts to automatically coerce strings in the input records into numbers and booleans. Useful for delimited file inputs or where type information was lost.",
             "",
-            "    --detect-types",
-            "    -I",
-            "         Attempts to automatically coerce strings in the input records into numbers and booleans. Useful for delimited file inputs or where type information was lost.",
+            HELP_SPACING + "--source <file path> or piped data",
+            HELP_SPACING + "-s <file path> or piped data",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Alternate method of specifying the source file. When piping data the input type must be specified.",
             "",
-            "    --source <file path> or piped data",
-            "    -s <file path> or piped data",
-            "         Alternate method of specifying the source file. When piping data the input type must be specified.",
-            "",
-            "    --target",
-            "    -t <file path> or piped out",
-            "         Alternate method of specifying the target file. When piping data out the target type must be specified.",
+            HELP_SPACING + "--target",
+            HELP_SPACING + "-t <file path> or piped out",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Alternate method of specifying the target file. When piping data out the target type must be specified.",
         };
     }
 
@@ -322,6 +329,13 @@ public class Convert implements Tool
     @Override
     public boolean parse(String[] args, int start) throws MalformedURLException, IOException
     {
+        if(start == args.length) 
+        {
+            printToolHelp(this);
+            
+            return true;
+        }
+        
         for(int i=start; i<args.length; i++)
         {
             // Handle single-letter params with no spaces in them
@@ -337,8 +351,9 @@ public class Convert implements Tool
                 case "--help":
                 case "-h":
                 case "-?":
-                    return false;
-                
+                    printToolHelp(this);
+                    return true;
+                    
                 case "--jbin-compress":
                 case "-z":
                     jbinCompress = true;

@@ -21,20 +21,25 @@ SOFTWARE.
  */
 package com.invirgance.virge.file;
 
-import static com.invirgance.virge.Virge.exit;
-import static com.invirgance.virge.Virge.printHelp;
-import static com.invirgance.virge.Virge.printShortHelp;
 import com.invirgance.virge.tool.Tool;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This serves as the Virge File module, for copying, converting or acting on files in some way.
+ * This serves as the Virge file module, for copying, converting or acting on files in some way.
  *
  * @author tadghh
  */
 public class VirgeFile 
 {
+    public static final String HELP_SPACING = "    ";
+    public static final String HELP_DESCRIPTION_SPACING = "   ";
+    
+    private static final String HELP = "Tools for copying, converting/transforming files.";
+    
+    public static Tool SELECTED;
+
     public static final Map<String,Tool> lookup = new HashMap<>();
     
     public static final Tool[] tools = new Tool[] {
@@ -44,7 +49,76 @@ public class VirgeFile
     static {
         for(Tool tool : tools) lookup.put(tool.getName(), tool);
     }
- 
+    
+    public static void print(String[] lines, PrintStream out)
+    {
+        for(String line : lines)
+        {
+            out.println(line);
+        }
+        
+        out.println();
+        out.println();
+    }
+    
+    public static void printToolHelp(Tool selected)
+    {
+        // TODO look at adding sub tools to Tool
+        Boolean level = SELECTED != null && selected != null && !SELECTED.getName().equals(selected.getName()) || SELECTED != null && selected == null;
+        
+        String top = level ? SELECTED.getName() + " " : "";
+        String sub = selected != null ? selected.getName() : "";
+       
+        System.out.println();
+        System.out.println("Usage: virge.jar file " + top + sub);
+        System.out.println();
+        
+        if(selected != null)
+        {
+            System.out.println(selected.getShortDescription());
+            System.out.println();
+            System.out.println("Options:");
+        }
+        else
+        {   
+            if(SELECTED != null)
+            {
+                System.out.println(SELECTED.getShortDescription());
+            }
+            else
+            {
+               System.out.println(HELP);
+            }
+            
+            System.out.println();
+            System.out.println("Commands:");
+        }
+        
+        System.out.println();
+        
+        if(selected != null)
+        {
+            print(selected.getHelp(), System.out);
+        }
+        else
+        {   
+            if(SELECTED != null)
+            {
+                print(SELECTED.getHelp(), System.out);
+            }
+            else
+            {
+                for(Tool help : tools)
+                {
+                    System.out.println(HELP_SPACING + help.getName() + " - " + help.getShortDescription());
+                }  
+                System.out.println();
+            }
+        }
+    
+        System.exit(1);
+    }
+    
     /**
      * The entry point for this module, the TLC (top level command) should be stripped before this is called
      * @param args The commands for the virge-file module
@@ -52,21 +126,25 @@ public class VirgeFile
      */
     public static void main(String[] args) throws Exception
     {
-        Tool tool;
-
-        if(args.length <= 1) printShortHelp();
-
-        if(args[0].equals("--help") || args[0].equals("-h") || args[0].equals("-?"))
-        {
-            printHelp(null);
+        // NOTE: -? might be a special pattern in some shells, zsh?
+        if(args.length == 0 || args[0].equals("--help") || args[0].equals("-h") || args[0].equals("-?"))
+        {   
+            printToolHelp(null);
+         
+            return;
         }
         
-        tool = lookup.get(args[0]);
+        SELECTED = lookup.get(args[0]);
+
+        if(SELECTED == null) 
+        {
+            System.err.println("\nUnknown Command: " + args[0]);
+            
+            printToolHelp(null);
+        }
         
-        if(tool == null) exit(6, "Unknown tool: " + args[0]);
+        if(!SELECTED.parse(args, 1)) printToolHelp(null);
         
-        if(!tool.parse(args, 1)) printHelp(tool);
-        
-        tool.execute();
+        SELECTED.execute();
     }
 }
