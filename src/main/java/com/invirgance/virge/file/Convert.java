@@ -23,11 +23,13 @@ package com.invirgance.virge.file;
 
 
 import com.invirgance.convirgance.ConvirganceException;
+import com.invirgance.convirgance.input.CSVInput;
 import com.invirgance.convirgance.input.DelimitedInput;
 import com.invirgance.convirgance.input.Input;
 import com.invirgance.convirgance.input.JBINInput;
 import com.invirgance.convirgance.input.JSONInput;
 import com.invirgance.convirgance.json.JSONObject;
+import com.invirgance.convirgance.output.CSVOutput;
 import com.invirgance.convirgance.output.DelimitedOutput;
 import com.invirgance.convirgance.output.JBINOutput;
 import com.invirgance.convirgance.output.JSONOutput;
@@ -41,14 +43,14 @@ import com.invirgance.convirgance.target.Target;
 import com.invirgance.convirgance.transform.CoerceStringsTransformer;
 import com.invirgance.virge.Virge;
 import static com.invirgance.virge.Virge.exit;
+import static com.invirgance.virge.file.VirgeFile.HELP_DESCRIPTION_SPACING;
+import static com.invirgance.virge.file.VirgeFile.HELP_SPACING;
+import static com.invirgance.virge.file.VirgeFile.printToolHelp;
 import com.invirgance.virge.tool.Tool;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import static com.invirgance.virge.file.VirgeFile.HELP_SPACING;
-import static com.invirgance.virge.file.VirgeFile.HELP_DESCRIPTION_SPACING;
-import static com.invirgance.virge.file.VirgeFile.printToolHelp;
 
 
 /**
@@ -131,11 +133,8 @@ public class Convert implements Tool
     {
         File file;
         
-        if(path.equals("-"))
-        {
-            return new InputStreamSource(System.in);
-        }
-        
+        if(path.equals("-")) return new InputStreamSource(System.in);
+          
         if(isURL(path))
         {
             return new InputStreamSource(URI.create(path).toURL().openStream());
@@ -143,7 +142,10 @@ public class Convert implements Tool
         
         file = new File(path);
         
-        if(!file.exists()) throw new ConvirganceException("File not found: " + path);
+        if(!file.isFile()){
+            System.err.println("Invalid File Source: " + file.toString());
+            throw new ConvirganceException("File not found: " + path);
+        }
         
         return new FileSource(file);
     }
@@ -159,18 +161,18 @@ public class Convert implements Tool
         path = path.toLowerCase();
         
         if(path.endsWith(".json")) return new JSONInput();
-        if(path.endsWith(".csv")) return new DelimitedInput(','); // TODO: need to support proper CSV format
+        if(path.endsWith(".csv")) return new CSVInput(); 
         if(path.endsWith(".jbin")) return new JBINInput();
         
         return null;
     }
     
-    private Input<JSONObject> getInput(String type)
+    private Input<JSONObject> getInputType(String type)
     {
         switch(type)
         {
-            case "csv": // TODO: need to support proper CSV format
-                return new DelimitedInput(',');
+            case "csv": 
+                return new CSVInput();
             
             case "tsv":
                 return new DelimitedInput('\t');
@@ -196,21 +198,12 @@ public class Convert implements Tool
         }
     }
     
-    @Override
-    public String getShortDescription()
-    {
-        return "Transforms a file from its original format to the provided one.";
-    }
-    
     private Target getTarget(String path) throws MalformedURLException, IOException
     {
         File file;
 
-        if(path.equals("-"))
-        {
-            return new OutputStreamTarget(System.out);
-        }
-
+        if(path.equals("-")) return new OutputStreamTarget(System.out);
+    
         if(isURL(path))
         {
             return new OutputStreamTarget(URI.create(path).toURL().openConnection().getOutputStream());
@@ -237,7 +230,7 @@ public class Convert implements Tool
         path = path.toLowerCase();
         
         if(path.endsWith(".json")) return new JSONOutput();
-        if(path.endsWith(".csv")) return new DelimitedOutput(','); // TODO: need to support proper CSV format
+        if(path.endsWith(".csv")) return new CSVOutput(); 
         if(path.endsWith(".jbin")) return new JBINOutput(jbinCompress);
         
         return null;
@@ -247,8 +240,8 @@ public class Convert implements Tool
     {
         switch(type)
         {
-            case "csv": // TODO: need to support proper CSV format
-                return new DelimitedOutput(',');
+            case "csv": 
+                return new CSVOutput();
             
             case "tsv":
                 return new DelimitedOutput('\t');
@@ -273,6 +266,19 @@ public class Convert implements Tool
                 return null; // Keep the compiler happy
         }
     }
+
+    private boolean error(String message)
+    {
+        System.err.println(message);
+        
+        return false;
+    }
+    
+    @Override
+    public String getShortDescription()
+    {
+        return "Transforms a file from its original format to the provided one.";
+    }    
     
     @Override
     public String getName()
@@ -285,45 +291,38 @@ public class Convert implements Tool
     {
         return new String[]
         {
-            HELP_SPACING + "--input <format>",
-            HELP_SPACING + "-i <format>",
-            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Specify the format of the input file. Currently supported options are json, csv, tsv, pipe, delimited, and jbin",
+            HELP_SPACING + "--source <\"file path\"> or piped data <\"-\">",
+            HELP_SPACING + "-s <\"file path\"> or piped data <\"-\">",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Alternate method of specifying the source file. When piping data the input type must be specified.",
             "",
-            HELP_SPACING + "--output <format>",
+            HELP_SPACING + "--source-type <format>",
+            HELP_SPACING + "-i <format>",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Specify the format of the source file. Currently supported options are json, csv, tsv, pipe, delimited, and jbin",
+            "",
+            HELP_SPACING + "--target <\"file path\"> or piped out <\"-\">",
+            HELP_SPACING + "-t <\"file path\"> or piped out <\"-\">",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Alternate method of specifying the target file. When piping data out the target type must be specified.",
+            "",
+            HELP_SPACING + "--target-type <format>",
             HELP_SPACING + "-o <format>",
-            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Specify the format of the output file. Currently supported options are json, csv, tsv, pipe, delimited, and jbin",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Specify the format of the target file. Currently supported options are json, csv, tsv, pipe, delimited, and jbin",
             "",
             HELP_SPACING + "--jbin-compress",
             HELP_SPACING + "-z",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Enable compression when writing a jbin file",
             "",
-            HELP_SPACING + "--input-delimiter <delimiter>",
+            HELP_SPACING + "--source-delimiter <delimiter>",
             HELP_SPACING + "-D <delimiter>",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Set the column delimiter if the source is a delimited file (e.g. , or |)",
             "",
-            HELP_SPACING + "--output-delimiter <delimiter>",
+            HELP_SPACING + "--target-delimiter <delimiter>",
             HELP_SPACING + "-d <delimiter>",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Set the column delimiter if the target is a delimited file (e.g. , or |)",
             "",
-            HELP_SPACING + "--detect-types",
-            HELP_SPACING + "-I",
-            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Attempts to automatically coerce strings in the input records into numbers and booleans. Useful for delimited file inputs or where type information was lost.",
-            "",
-            HELP_SPACING + "--source <file path> or piped data",
-            HELP_SPACING + "-s <file path> or piped data",
-            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Alternate method of specifying the source file. When piping data the input type must be specified.",
-            "",
-            HELP_SPACING + "--target",
-            HELP_SPACING + "-t <file path> or piped out",
-            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Alternate method of specifying the target file. When piping data out the target type must be specified.",
+            HELP_SPACING + "--detect-input-types",
+            HELP_SPACING + "-T",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Attempts to automatically coerce strings in the input records into numbers and booleans.",
         };
-    }
-
-    private boolean error(String message)
-    {
-        System.err.println(message);
-        
-        return false;
     }
     
     @Override
@@ -362,7 +361,7 @@ public class Convert implements Tool
                     
                     break;
                 
-                case "--input-delimiter":
+                case "--source-delimiter":
                 case "-D":
                     inputDelimiter = args[++i].charAt(0);
                     
@@ -370,7 +369,7 @@ public class Convert implements Tool
                     
                     break;
                     
-                case "--output-delimiter":
+                case "--target-delimiter":
                 case "-d":
                     outputDelimiter = args[++i].charAt(0);
                     
@@ -382,40 +381,36 @@ public class Convert implements Tool
                 case "-s":
                     source = getSource(args[++i]);
                     
-                    if(input == null && args[i] != "-") input = detectInput(args[i]);
+                    if(input == null) input = detectInput(args[i]);
                     
                     break;
                     
-                case "--input":
-                case "--input-type":
+                case "--source-type":
                 case "-i":
-                    input = getInput(args[++i]);
-                    
+                    input = getInputType(args[++i]);
                     break;
                     
                 case "--target":
                 case "-t":
                     target = getTarget(args[++i]);
                     
-                    if(output == null && args[i] != "-") output = detectOutput(args[i]);
+                    if(output == null) output = detectOutput(args[i]);
                     
                     break;
                     
-                case "--output":
-                case "--output-type":
+                case "--target-type":
                 case "-o":
                     output = getOutput(args[++i]);
-                    
                     break;
                     
-                case "--detect-types":
-                case "-I":
+                case "--detect-input-types":
+                case "-T":
                     detectTypes = true;
                     break;
                     
                 default:
                     
-                    if(source == null)
+                    if(source == null && (args[i].equals("-") || args[i].contains(".")))
                     {
                         source = getSource(args[i]);
                     
@@ -423,7 +418,7 @@ public class Convert implements Tool
 
                         break;
                     }
-                    else if(target == null)
+                    else if(target == null && (args[i].equals("-") || args[i].contains(".")))
                     {
                         target = getTarget(args[i]);
 
@@ -439,9 +434,9 @@ public class Convert implements Tool
         }
         
         if(source == null) return error("No source specified!");
-        if(input == null) return error("No input type specified and unable to autodetect");
+        if(input == null) return error("No source type specified and unable to autodetect");
         if(target == null) return error("No target specified!");
-        if(output == null) return error("No output type specified and unable to autodetect");
+        if(output == null) return error("No target type specified and unable to autodetect");
         
         return true;
     }

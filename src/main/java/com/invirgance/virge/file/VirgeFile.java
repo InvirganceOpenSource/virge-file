@@ -73,48 +73,37 @@ public class VirgeFile
         System.out.println("Usage: virge.jar file " + top + sub);
         System.out.println();
         
-        if(selected != null)
+         if(selected != null)
         {
             System.out.println(selected.getShortDescription());
             System.out.println();
             System.out.println("Options:");
-        }
-        else
-        {   
-            if(SELECTED != null)
-            {
-                System.out.println(SELECTED.getShortDescription());
-            }
-            else
-            {
-               System.out.println(HELP);
-            }
-            
             System.out.println();
-            System.out.println("Commands:");
-        }
-        
-        System.out.println();
-        
-        if(selected != null)
-        {
+            
             print(selected.getHelp(), System.out);
         }
+        else if(SELECTED != null)
+        {
+            System.out.println(SELECTED.getShortDescription());
+            System.out.println();
+            System.out.println("Commands: Passing '-h' to a command will display all options.");
+            System.out.println();
+            
+            print(SELECTED.getHelp(), System.out); 
+        }
         else
-        {   
-            if(SELECTED != null)
+        {
+            System.out.println(HELP);
+            System.out.println();
+            System.out.println("Commands:");
+            System.out.println();
+
+            for(Tool help : tools)
             {
-                print(SELECTED.getHelp(), System.out);
-            }
-            else
-            {
-                for(Tool help : tools)
-                {
-                    System.out.println(HELP_SPACING + help.getName() + " - " + help.getShortDescription());
-                }  
-                
-                System.out.println();
-            }
+                System.out.println(HELP_SPACING + help.getName() + " - " + help.getShortDescription());
+            }  
+
+            System.out.println(); 
         }
     
         System.exit(1);
