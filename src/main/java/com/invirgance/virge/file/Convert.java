@@ -236,7 +236,7 @@ public class Convert implements Tool
         return null;
     }
     
-    private Output getOutput(String type)
+    private Output getOutputType(String type)
     {
         switch(type)
         {
@@ -307,21 +307,21 @@ public class Convert implements Tool
             HELP_SPACING + "-o <format>",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Specify the format of the target file. Currently supported options are json, csv, tsv, pipe, delimited, and jbin",
             "",
-            HELP_SPACING + "--jbin-compress",
-            HELP_SPACING + "-z",
-            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Enable compression when writing a jbin file",
-            "",
             HELP_SPACING + "--source-delimiter <delimiter>",
-            HELP_SPACING + "-D <delimiter>",
+            HELP_SPACING + "-S <delimiter>",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Set the column delimiter if the source is a delimited file (e.g. , or |)",
             "",
             HELP_SPACING + "--target-delimiter <delimiter>",
-            HELP_SPACING + "-d <delimiter>",
+            HELP_SPACING + "-T <delimiter>",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Set the column delimiter if the target is a delimited file (e.g. , or |)",
             "",
             HELP_SPACING + "--detect-input-types",
-            HELP_SPACING + "-T",
+            HELP_SPACING + "-a",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Attempts to automatically coerce strings in the input records into numbers and booleans.",
+            "",
+            HELP_SPACING + "--jbin-compress",
+            HELP_SPACING + "-z",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Enable compression when writing a jbin file",
         };
     }
     
@@ -352,31 +352,7 @@ public class Convert implements Tool
                 case "-?":
                     printToolHelp(this);
                     return true;
-                    
-                case "--jbin-compress":
-                case "-z":
-                    jbinCompress = true;
-                    
-                    if(output instanceof JBINOutput) ((JBINOutput)output).setCompressed(jbinCompress);
-                    
-                    break;
-                
-                case "--source-delimiter":
-                case "-D":
-                    inputDelimiter = args[++i].charAt(0);
-                    
-                    if(input instanceof DelimitedInput) ((DelimitedInput)input).setDelimiter(inputDelimiter);
-                    
-                    break;
-                    
-                case "--target-delimiter":
-                case "-d":
-                    outputDelimiter = args[++i].charAt(0);
-                    
-                    if(output instanceof DelimitedOutput) ((DelimitedOutput)output).setDelimiter(outputDelimiter);
-                    
-                    break;
-                
+
                 case "--source":
                 case "-s":
                     source = getSource(args[++i]);
@@ -400,14 +376,38 @@ public class Convert implements Tool
                     
                 case "--target-type":
                 case "-o":
-                    output = getOutput(args[++i]);
+                    output = getOutputType(args[++i]);
+                    break;
+
+                case "--source-delimiter":
+                case "-S":
+                    inputDelimiter = args[++i].charAt(0);
+                    
+                    if(input instanceof DelimitedInput) ((DelimitedInput)input).setDelimiter(inputDelimiter);
+                    
+                    break;
+                    
+                case "--target-delimiter":
+                case "-T":
+                    outputDelimiter = args[++i].charAt(0);
+                    
+                    if(output instanceof DelimitedOutput) ((DelimitedOutput)output).setDelimiter(outputDelimiter);
+                    
                     break;
                     
                 case "--detect-input-types":
-                case "-T":
+                case "-a":
                     detectTypes = true;
                     break;
                     
+                case "--jbin-compress":
+                case "-z":
+                    jbinCompress = true;
+                    
+                    if(output instanceof JBINOutput) ((JBINOutput)output).setCompressed(jbinCompress);
+                    
+                    break;
+                                                    
                 default:
                     
                     if(source == null && (args[i].equals("-") || args[i].contains(".")))
