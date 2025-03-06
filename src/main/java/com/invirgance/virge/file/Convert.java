@@ -150,6 +150,27 @@ public class Convert implements Tool
         return new FileSource(file);
     }
     
+    private Target getTarget(String path) throws MalformedURLException, IOException
+    {
+        File file;
+
+        if(path.equals("-")) return new OutputStreamTarget(System.out);
+    
+        if(isURL(path))
+        {
+            return new OutputStreamTarget(URI.create(path).toURL().openConnection().getOutputStream());
+        }
+        
+        file = new File(path);
+        
+        if(file.getParentFile() != null && !file.getParentFile().exists()) 
+        {
+            file.getParentFile().mkdirs();
+        }
+        
+        return new FileTarget(file);
+    }   
+    
     // TODO: Improve auto-detection
     private Input<JSONObject> detectInput(String path) throws MalformedURLException
     {
@@ -167,6 +188,23 @@ public class Convert implements Tool
         return null;
     }
     
+    // TODO: Should the default be symetrical input/output?
+    private Output detectOutput(String path) throws MalformedURLException
+    {
+        if(isURL(path))
+        {
+            path = URI.create(path).toURL().getFile();
+        }
+        
+        path = path.toLowerCase();
+        
+        if(path.endsWith(".json")) return new JSONOutput();
+        if(path.endsWith(".csv")) return new CSVOutput(); 
+        if(path.endsWith(".jbin")) return new JBINOutput(jbinCompress);
+        
+        return null;
+    }
+   
     private Input<JSONObject> getInputType(String type)
     {
         switch(type)
@@ -178,6 +216,7 @@ public class Convert implements Tool
                 return new DelimitedInput('\t');
             
             case "pipe":
+            case "|":
                 return new DelimitedInput('|');
             
             case "delimited":
@@ -198,44 +237,6 @@ public class Convert implements Tool
         }
     }
     
-    private Target getTarget(String path) throws MalformedURLException, IOException
-    {
-        File file;
-
-        if(path.equals("-")) return new OutputStreamTarget(System.out);
-    
-        if(isURL(path))
-        {
-            return new OutputStreamTarget(URI.create(path).toURL().openConnection().getOutputStream());
-        }
-        
-        file = new File(path);
-        
-        if(file.getParentFile() != null && !file.getParentFile().exists()) 
-        {
-            file.getParentFile().mkdirs();
-        }
-        
-        return new FileTarget(file);
-    }
-    
-    // TODO: Should the default be symetrical input/output?
-    private Output detectOutput(String path) throws MalformedURLException
-    {
-        if(isURL(path))
-        {
-            path = URI.create(path).toURL().getFile();
-        }
-        
-        path = path.toLowerCase();
-        
-        if(path.endsWith(".json")) return new JSONOutput();
-        if(path.endsWith(".csv")) return new CSVOutput(); 
-        if(path.endsWith(".jbin")) return new JBINOutput(jbinCompress);
-        
-        return null;
-    }
-    
     private Output getOutputType(String type)
     {
         switch(type)
@@ -247,6 +248,7 @@ public class Convert implements Tool
                 return new DelimitedOutput('\t');
             
             case "pipe":
+            case "|":
                 return new DelimitedOutput('|');
             
             case "delimited":
@@ -275,9 +277,15 @@ public class Convert implements Tool
     }
     
     @Override
+    public String getExample()
+    {
+        return "virge.jar file convert \"/olap_report.json\" \"/report.csv\"";
+    }    
+    
+    @Override
     public String getShortDescription()
     {
-        return "Transforms a file from its original format to the provided one.";
+        return "Transforms a file from its original format to the provided one." + "\n" + HELP_SPACING + HELP_DESCRIPTION_SPACING + this.getExample();
     }    
     
     @Override
