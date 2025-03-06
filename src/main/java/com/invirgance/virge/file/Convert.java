@@ -142,8 +142,10 @@ public class Convert implements Tool
         
         file = new File(path);
         
-        if(!file.isFile()){
+        if(!file.isFile())
+        {
             System.err.println("Invalid File Source: " + file.toString());
+            
             throw new ConvirganceException("File not found: " + path);
         }
         
