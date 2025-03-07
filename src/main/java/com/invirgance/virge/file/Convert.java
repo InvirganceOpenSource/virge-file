@@ -287,7 +287,7 @@ public class Convert implements Tool
     @Override
     public String getShortDescription()
     {
-        return "Transforms a file from its original format to the provided one." + "\n" + HELP_SPACING + HELP_DESCRIPTION_SPACING + this.getExample();
+        return "Transforms a file from its original format to the provided one.";
     }    
     
     @Override
@@ -331,7 +331,12 @@ public class Convert implements Tool
             "",
             HELP_SPACING + "--jbin-compress",
             HELP_SPACING + "-z",
-            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Enable compression when writing a jbin file",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING + "Enable compression when writing a jbin file",            
+            "",           
+            HELP_SPACING + "--help",
+            HELP_SPACING + "-h",
+            HELP_SPACING + "-?",
+            HELP_SPACING + HELP_DESCRIPTION_SPACING  + "Display this menu.",     
         };
     }
     
