@@ -326,7 +326,7 @@ public class Convert implements Tool
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Set the column delimiter if the target is a delimited file (e.g. , or |)",
             "",
             HELP_SPACING + "--detect-input-types",
-            HELP_SPACING + "-a",
+            HELP_SPACING + "-auto",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Attempts to automatically coerce strings in the input records into numbers and booleans.",
             "",
             HELP_SPACING + "--jbin-compress",
@@ -353,12 +353,16 @@ public class Convert implements Tool
         for(int i=start; i<args.length; i++)
         {
             // Handle single-letter params with no spaces in them
-            if(args[i].length() > 2 && args[i].charAt(0) == '-' && Character.isLetterOrDigit(args[i].charAt(1)))
-            {
-                parse(new String[]{ args[i].substring(0, 2), args[i].substring(2) }, 0);
-                
-                continue;
-            }
+
+//            Note: 
+//               - How many users are going to pass in options like this?
+//               - Added complexity for 10% of the userbase? or does this format provide flexibiltiy?
+//            if(args[i].length() > 2 && args[i].charAt(0) == '-' && Character.isLetterOrDigit(args[i].charAt(1)))
+//            {
+//                parse(new String[]{ args[i].substring(0, 2), args[i].substring(2) }, 0);
+//                
+//                continue;
+//            }
             
             switch(args[i])
             {
@@ -411,7 +415,7 @@ public class Convert implements Tool
                     break;
                     
                 case "--detect-input-types":
-                case "-a":
+                case "-auto":
                     detectTypes = true;
                     break;
                     
