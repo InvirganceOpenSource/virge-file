@@ -21,6 +21,8 @@ SOFTWARE.
  */
 package com.invirgance.virge.file;
 
+import static com.invirgance.virge.Virge.HELP_DESCRIPTION_SPACING;
+import static com.invirgance.virge.Virge.HELP_SPACING;
 import com.invirgance.virge.tool.Tool;
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -33,8 +35,6 @@ import java.util.Map;
  */
 public class VirgeFile 
 {
-    public static final String HELP_SPACING = "    ";
-    public static final String HELP_DESCRIPTION_SPACING = "   ";
     
     private static final String HELP = "Tools for copying, converting/transforming files.";
     
