@@ -76,7 +76,7 @@ public class VirgeFile
         if(selected != null)
         {
             System.out.println();
-            System.out.println("Usage: virge.jar file " + top + singleTool + sub + " <option>");
+            System.out.println("Usage: virge.jar file " + top + singleTool + sub + " <OPTIONS>");
             System.out.println();
             System.out.println(selected.getShortDescription());
             System.out.println();
@@ -89,13 +89,15 @@ public class VirgeFile
         {
             // Top level tools
             System.out.println();
-            System.out.println("Usage: virge.jar file " + top + sub + " <command>");
+            System.out.println("Usage: virge.jar file " + top + sub + " <COMMAND>");
             System.out.println();
             System.out.println(SELECTED.getShortDescription());
             System.out.println();            
             System.out.println("Options:");
             System.out.println();
-            System.out.println(HELP_SPACING + "<command> -h | --help - to view a tools options.");
+            System.out.println(HELP_SPACING + "--help");
+            System.out.println(HELP_SPACING + "-h");
+            System.out.println(HELP_SPACING + HELP_DESCRIPTION_SPACING + "View a tools options.");
             System.out.println();
             System.out.println("Commands:");
             System.out.println();
@@ -106,13 +108,9 @@ public class VirgeFile
         {
             // No command
             System.out.println();
-            System.out.println("Usage: virge.jar file <tool>");
+            System.out.println("Usage: virge.jar file <TOOL>");
             System.out.println();
             System.out.println(HELP);
-            System.out.println();
-            System.out.println("Options:");
-            System.out.println();
-            System.out.println(HELP_SPACING + "--all - View all tools and the commands they contain.");
             System.out.println();
             System.out.println("Tools:");
             System.out.println();
@@ -123,28 +121,6 @@ public class VirgeFile
             }  
 
             System.out.println(); 
-        }
-        
-        System.exit(1);
-    }
-
-    public static void printAllBriefHelp()
-    {
-        // Note: this command is like a man page.
-        System.out.println();
-        System.out.println("Usage: virge.jar file <tool> <command>");
-        System.out.println();
-        System.out.println("The following tools are available.");
-        System.out.println();
-        System.out.println("Tools:");
-        System.out.println();
-        
-        for(Tool tool : tools)
-        {
-            System.out.println(" " + tool.getName() + " - " + tool.getShortDescription());
-            System.out.println("   Commands:");
-            
-            print(tool.getHelp(), System.out);
         }
         
         System.exit(1);
@@ -164,13 +140,6 @@ public class VirgeFile
          
             return;
         }
-        
-        if(args[0].equals("--all"))
-        {   
-            printAllBriefHelp();
-         
-            return;
-        }        
         
         SELECTED = lookup.get(args[0]);
 

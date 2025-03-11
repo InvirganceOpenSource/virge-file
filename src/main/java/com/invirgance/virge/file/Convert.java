@@ -218,7 +218,6 @@ public class Convert implements Tool
                 return new DelimitedInput('\t');
             
             case "pipe":
-            case "|":
                 return new DelimitedInput('|');
             
             case "delimited":
@@ -250,7 +249,6 @@ public class Convert implements Tool
                 return new DelimitedOutput('\t');
             
             case "pipe":
-            case "|":
                 return new DelimitedOutput('|');
             
             case "delimited":
@@ -301,32 +299,32 @@ public class Convert implements Tool
     {
         return new String[]
         {
-            HELP_SPACING + "--source <\"file path\"> or piped data <\"-\">",
-            HELP_SPACING + "-s <\"file path\"> or piped data <\"-\">",
+            HELP_SPACING + "--source <PATH> or piped data -",
+            HELP_SPACING + "-s <PATH> or piped data -",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Alternate method of specifying the source file. When piping data the input type must be specified.",
             "",
-            HELP_SPACING + "--source-type <format>",
-            HELP_SPACING + "-i <format>",
+            HELP_SPACING + "--source-type [FORMAT]",
+            HELP_SPACING + "-i [FORMAT]",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Specify the format of the source file. Currently supported options are json, csv, tsv, pipe, delimited, and jbin",
             "",
-            HELP_SPACING + "--target <\"file path\"> or piped out <\"-\">",
-            HELP_SPACING + "-t <\"file path\"> or piped out <\"-\">",
+            HELP_SPACING + "--target <PATH> or piped out -",
+            HELP_SPACING + "-t <PATH> or piped out -",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Alternate method of specifying the target file. When piping data out the target type must be specified.",
             "",
-            HELP_SPACING + "--target-type <format>",
-            HELP_SPACING + "-o <format>",
+            HELP_SPACING + "--target-type [FORMAT]",
+            HELP_SPACING + "-o [FORMAT]",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Specify the format of the target file. Currently supported options are json, csv, tsv, pipe, delimited, and jbin",
             "",
-            HELP_SPACING + "--source-delimiter <delimiter>",
-            HELP_SPACING + "-S <delimiter>",
+            HELP_SPACING + "--source-delimiter [DELIMITER]",
+            HELP_SPACING + "-S [DELIMITER]",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Set the column delimiter if the source is a delimited file (e.g. , or |)",
             "",
-            HELP_SPACING + "--target-delimiter <delimiter>",
-            HELP_SPACING + "-T <delimiter>",
+            HELP_SPACING + "--target-delimiter [DELIMITER]",
+            HELP_SPACING + "-T [DELIMITER]",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Set the column delimiter if the target is a delimited file (e.g. , or |)",
             "",
             HELP_SPACING + "--detect-input-types",
-            HELP_SPACING + "-auto",
+            HELP_SPACING + "-a",
             HELP_SPACING + HELP_DESCRIPTION_SPACING + "Attempts to automatically coerce strings in the input records into numbers and booleans.",
             "",
             HELP_SPACING + "--jbin-compress",
@@ -335,7 +333,6 @@ public class Convert implements Tool
             "",           
             HELP_SPACING + "--help",
             HELP_SPACING + "-h",
-            HELP_SPACING + "-?",
             HELP_SPACING + HELP_DESCRIPTION_SPACING  + "Display this menu.",     
         };
     }
@@ -368,7 +365,6 @@ public class Convert implements Tool
             {
                 case "--help":
                 case "-h":
-                case "-?":
                     printToolHelp(this);
                     return true;
 
@@ -415,7 +411,7 @@ public class Convert implements Tool
                     break;
                     
                 case "--detect-input-types":
-                case "-auto":
+                case "-a":
                     detectTypes = true;
                     break;
                     
